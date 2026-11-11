@@ -1,0 +1,36 @@
+<?php
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\{ShopController,AuthController,CartController,CheckoutController,AccountController,AdminController,MercadoPagoController};
+Route::get('/',[ShopController::class,'home'])->name('home');
+Route::post('/webhooks/mercadopago',[MercadoPagoController::class,'webhook'])->middleware('throttle:120,1')->name('mp.webhook');
+Route::get('/loja',[ShopController::class,'catalog'])->name('catalog');
+Route::get('/categoria/{category:slug}',[ShopController::class,'category'])->name('category');
+Route::get('/produto/{product:slug}',[ShopController::class,'product'])->name('product');
+Route::get('/sitemap.xml',[ShopController::class,'sitemap'])->name('sitemap');
+Route::get('/api/frete-demo',[ShopController::class,'shippingQuote'])->middleware('throttle:25,1')->name('shipping.quote');
+Route::get('/api/sugestoes',[ShopController::class,'suggestions'])->middleware('throttle:30,1')->name('suggestions');
+Route::post('/newsletter',[ShopController::class,'newsletter'])->middleware('throttle:3,1')->name('newsletter');
+Route::get('/paginas/{page}',[ShopController::class,'page'])->name('page');
+Route::middleware('guest')->group(function(){
+ Route::get('/entrar',[AuthController::class,'loginForm'])->name('login');Route::post('/entrar',[AuthController::class,'login'])->middleware('throttle:5,1')->name('login.submit');
+ Route::get('/criar-conta',[AuthController::class,'registerForm'])->name('register');Route::post('/criar-conta',[AuthController::class,'register'])->middleware('throttle:5,1')->name('register.submit');
+ Route::get('/esqueci-senha',[AuthController::class,'forgotForm'])->name('password.request');Route::post('/esqueci-senha',[AuthController::class,'forgot'])->middleware('throttle:3,1')->name('password.email');
+ Route::get('/redefinir-senha/{token}',[AuthController::class,'resetForm'])->name('password.reset');Route::post('/redefinir-senha',[AuthController::class,'reset'])->name('password.update');
+});
+Route::post('/sair',[AuthController::class,'logout'])->middleware('auth')->name('logout');
+Route::get('/carrinho',[CartController::class,'index'])->name('cart');Route::post('/carrinho/adicionar',[CartController::class,'add'])->name('cart.add');Route::patch('/carrinho/{item}',[CartController::class,'update'])->name('cart.update');Route::delete('/carrinho/{item}',[CartController::class,'remove'])->name('cart.remove');Route::post('/carrinho/cupom',[CartController::class,'coupon'])->name('cart.coupon');
+Route::middleware(['auth','active'])->group(function(){
+ Route::get('/finalizar',[CheckoutController::class,'index'])->name('checkout');Route::post('/finalizar',[CheckoutController::class,'place'])->middleware('throttle:10,1')->name('checkout.place');
+ Route::get('/pedido/{order}',[CheckoutController::class,'order'])->name('order.show');Route::post('/pedido/{order}/pagar',[MercadoPagoController::class,'start'])->middleware('throttle:10,1')->name('order.mp.start');Route::post('/pedido/{order}/pagamento-demo',[CheckoutController::class,'demoPay'])->name('order.demo');Route::post('/pedido/{order}/cancelar',[CheckoutController::class,'cancel'])->name('order.cancel');
+ Route::get('/minha-conta',[AccountController::class,'index'])->name('account');Route::put('/minha-conta',[AccountController::class,'profile'])->name('account.profile');Route::post('/minha-conta/enderecos',[AccountController::class,'address'])->name('account.address');Route::delete('/minha-conta/enderecos/{address}',[AccountController::class,'deleteAddress'])->name('account.address.delete');
+ Route::get('/favoritos',[AccountController::class,'favorites'])->name('favorites');Route::post('/favoritos/{product}',[AccountController::class,'favorite'])->name('favorites.toggle');Route::post('/produto/{product}/avaliacao',[AccountController::class,'review'])->name('review.submit');Route::post('/pedido/{order}/devolucao',[AccountController::class,'requestReturn'])->name('return.submit');
+});
+Route::prefix('admin')->name('admin.')->middleware(['auth','active','role:superadmin,admin,operator'])->group(function(){
+ Route::get('/',[AdminController::class,'dashboard'])->name('dashboard');
+ Route::get('/produtos',[AdminController::class,'products'])->name('products');Route::get('/produtos/novo',[AdminController::class,'createProduct'])->name('products.create');Route::post('/produtos',[AdminController::class,'storeProduct'])->name('products.store');Route::get('/produtos/{product}/editar',[AdminController::class,'editProduct'])->name('products.edit');Route::put('/produtos/{product}',[AdminController::class,'updateProduct'])->name('products.update');Route::delete('/produtos/{product}',[AdminController::class,'deleteProduct'])->name('products.delete');
+ Route::get('/pedidos',[AdminController::class,'orders'])->name('orders');Route::get('/pedidos/{order}',[AdminController::class,'order'])->name('orders.show');Route::patch('/pedidos/{order}',[AdminController::class,'updateOrder'])->name('orders.update');Route::post('/pedidos/{order}/reembolsar-demo',[AdminController::class,'refundOrder'])->name('orders.refund');
+ Route::get('/estoque',[AdminController::class,'inventory'])->name('inventory');Route::post('/estoque/{variant}',[AdminController::class,'adjustInventory'])->name('inventory.adjust');
+ Route::get('/clientes',[AdminController::class,'customers'])->name('customers');Route::get('/relatorios',[AdminController::class,'reports'])->name('reports');Route::get('/relatorios/exportar',[AdminController::class,'export'])->name('export');
+ Route::get('/gestao/{resource}',[AdminController::class,'resource'])->name('resource');Route::post('/gestao/{resource}',[AdminController::class,'storeResource'])->name('resource.store');Route::delete('/gestao/{resource}/{id}',[AdminController::class,'deleteResource'])->name('resource.delete');
+ Route::get('/configuracoes',[AdminController::class,'settings'])->name('settings');Route::put('/configuracoes',[AdminController::class,'saveSettings'])->name('settings.save');
+});

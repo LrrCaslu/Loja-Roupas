@@ -1,0 +1,3 @@
+@extends('layouts.shop')
+@section('title','Redefinir senha | Aurora')
+@section('content')<div class="auth-background"><section class="auth-card"><h1>Nova senha</h1><form action="{{ route('password.update') }}" method="post">@csrf<input type="hidden" name="token" value="{{ $token }}"><label>E-mail<input required type="email" name="email" value="{{ $email }}"></label><label>Nova senha<input required type="password" name="password"></label><label>Confirmar nova senha<input required type="password" name="password_confirmation"></label><button class="btn btn-dark block">Redefinir senha</button></form></section></div>@endsection
