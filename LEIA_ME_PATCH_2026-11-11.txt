@@ -1,0 +1,20 @@
+AURORA MULTIMARCAS - PATCH DE PRODUTO E ESTOQUE (11/11/2026)
+
+SINTOMAS RESOLVIDOS NO CODIGO:
+- /produto/camiseta-algodao-premium-12: ParseError "Unclosed '[' does not match ')'".
+- /admin/estoque: RelationNotFoundException "variant" em StockMovement.
+
+ANTES DE INSTALAR:
+1. Faca backup de todo o projeto e do MySQL.
+2. Garanta que o Laravel ja foi instalado (vendor/autoload.php existente).
+3. Extraia os arquivos deste ZIP NA RAIZ atual do projeto, na pasta do artisan.
+4. Substitua os arquivos correspondentes, sem excluir outros.
+5. Execute VERIFICAR_CORRECOES_WINDOWS.bat pelo terminal configurado do ServBay.
+6. Acesse as duas URLs mostradas no script.
+
+NENHUMA alteracao em .env, APP_KEY, credenciais ou dados MySQL e necessaria.
+Nao execute migrate:fresh, db:wipe nem seeders para aplicar este patch.
+
+IMPORTANTE: a validacao de sintaxe do codigo foi feita nesta entrega;
+sem acesso ao banco e ao ServBay do usuario, o teste HTTP real devera ser
+feito na instalacao local. Testes Laravel adicionais foram incluidos.

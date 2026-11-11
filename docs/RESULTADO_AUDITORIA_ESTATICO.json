@@ -1,0 +1,21 @@
+{
+  "status": "APROVADO NO ESCOPO ESTATICO",
+  "php_files_checked": 84,
+  "blade_files_present": 27,
+  "js_files_checked": 4,
+  "route_names_checked": 54,
+  "known_route_names": 59,
+  "tables_in_migrations": 23,
+  "local_svg_demo_count": 45,
+  "all_project_files": 162,
+  "errors": [],
+  "not_executed": [
+    "composer install (Composer indisponível)",
+    "php artisan test (vendor + PDO SQLite indisponíveis)",
+    "php artisan migrate (MySQL indisponível)",
+    "php artisan view:cache (vendor indisponível)",
+    "npm run build (node_modules não instalados)",
+    "teste de navegador ServBay do usuário",
+    "webhooks Mercado Pago"
+  ]
+}
